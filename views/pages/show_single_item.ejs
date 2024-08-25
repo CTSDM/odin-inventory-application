@@ -1,0 +1,12 @@
+<%- include('../partials/_head.ejs') %> <%- include('../partials/header.ejs') %>
+Showing the description of the selected item.
+<div class="item">
+    Pick an item. <% if (locals.item) { %>
+    <div class="name">Name: <%= locals.item.name %></div>
+    <div class="description">Description: <%= locals.item.description %></div>
+    <div class="price">Price: <%= item.price %></div>
+    <div class="quantity">Quantity: <%= locals.item.quantity %></div>
+    <div class="category">Category: <%= locals.item.category_id %></div>
+    <% } %>
+</div>
+<%- include('../partials/_footer.ejs') %>

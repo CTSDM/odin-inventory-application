@@ -41,10 +41,34 @@ async function getAllItems() {
     return rows.length === 0 ? undefined : rows;
 }
 
+async function postAddNewItem(
+    name,
+    description,
+    price,
+    quantity,
+    parentCategory,
+) {
+    await pool.query(
+        `INSERT INTO ${env.database.productsTableName} (name, description, price, quantity, category_id)
+                        VALUES ($1,$2,$3,$4,$5)`,
+        [name, description, price, quantity, parentCategory],
+    );
+}
+
+async function getItem(itemId) {
+    const { rows } = await pool.query(
+        `SELECT * FROM ${env.database.productsTableName} WHERE id = $1`,
+        [itemId],
+    );
+    return rows.length === 0 ? undefined : rows;
+}
+
 module.exports = {
     getMainCategories,
     getSubCategories,
     getItemsFromCategory,
     getAllCategories,
     getAllItems,
+    postAddNewItem,
+    getItem,
 };

@@ -4,7 +4,7 @@ const router = Router();
 
 router.get("/", itemsController.getAllItems);
 router.get("/new", itemsController.getPrintForm);
-//router.post("/new", itemsController.getPrintForm);
-//router.get("/:id", itemsController.getAllParentItems);
+router.post("/new", itemsController.postAddNewItem);
+router.get("/:id", itemsController.getSelectedItem);
 
 module.exports = router;

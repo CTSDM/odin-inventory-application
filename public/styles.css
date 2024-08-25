@@ -2,7 +2,7 @@ body {
     background-color: lightgrey;
 }
 
-.category {
+.classification .category {
     display: flex;
     width: 100px;
     height: 100px;
@@ -16,4 +16,10 @@ body {
     display: flex;
     justify-content: center;
     gap: 10px;
+}
+
+.add-item form {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
 }
