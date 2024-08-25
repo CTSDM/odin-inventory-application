@@ -1,0 +1,22 @@
+<%- include('../partials/_head.ejs') %> <%- include('../partials/header.ejs') %>
+<div class="add-item">
+    <form action="/items/new" method="post">
+        <label for="name">Name: </label>
+        <input type="text" name="name" required />
+        <label for="description">Description: </label>
+        <textarea rows="2" cols="10" name="description"></textarea>
+        <label for="price">Price: </label>
+        <input type="number" name="price" min="0" max="99" required />
+        <label for="quantity">Quantity: </label>
+        <input type="number" name="quantity" required />
+        <label for="category">Category</label>
+        <% if (locals.parentItems) { %>
+        <select name="category">
+            <% locals.parentItems.forEach((category) => { %>
+            <option value="<%= category.name %>"><%= category.name %></option>
+            <% }) %>
+        </select>
+        <% } %>
+    </form>
+</div>
+<%- include('../partials/_footer.ejs') %>

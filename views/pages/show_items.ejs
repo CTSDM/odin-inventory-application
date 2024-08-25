@@ -1,0 +1,14 @@
+<%- include('../partials/_head.ejs') %> <%- include('../partials/header.ejs') %>
+<div>
+    Pick an item. <% if (locals.items) { %> <% locals.items.forEach((item) => {
+    %>
+    <div class="items">
+        <a href="/items/<%= item.id %>"><%= item.name %></a>
+    </div>
+    <% }) %>
+    <div class="add-item">
+        <a href="/items/new">Add new item!</a>
+    </div>
+    <% } %>
+</div>
+<%- include('../partials/_footer.ejs') %>

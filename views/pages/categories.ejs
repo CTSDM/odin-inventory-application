@@ -1,0 +1,10 @@
+<%- include('../partials/_head.ejs') %> <%- include('../partials/header.ejs') %>
+<div>
+    Pick a category. <% if (locals.categories) { %> <%
+    locals.categories.forEach((category) => { %>
+    <div class="category">
+        <a href="/categories/<%=category.id %>"><%= category.name %></a>
+    </div>
+    <% }) %> <% } %>
+</div>
+<%- include('../partials/_footer.ejs') %>
