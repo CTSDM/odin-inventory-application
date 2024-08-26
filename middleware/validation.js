@@ -86,7 +86,11 @@ const validateParamId = [
                 return true;
             } else return false;
         })
-        .withMessage("The id must be a finite value."),
+        .withMessage("The id must be a finite value.")
+        .custom((value) => {
+            if (value > 0) return true;
+            else return false;
+        }),
 ];
 
 const validation = { validateNewItem, validationResult, validateParamId };

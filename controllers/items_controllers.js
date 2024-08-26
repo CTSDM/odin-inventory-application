@@ -33,7 +33,12 @@ const postAddNewItem = [
             return helpersRoutes.renderWrongCategory(req, res, next);
         const errors = validation.validationResult(req);
         if (!errors.isEmpty())
-            helpersRoutes.renderWrongInformationItem(req, res, next);
+            return helpersRoutes.renderWrongInformationItem(
+                req,
+                res,
+                next,
+                errors,
+            );
         db.postAddNewItem(
             req.body.name,
             req.body.description,

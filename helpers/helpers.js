@@ -16,10 +16,11 @@ function renderWrongCategory(req, res, next) {
     return next();
 }
 
-function renderWrongInformationItem(req, res, next) {
+function renderWrongInformationItem(req, res, next, errors) {
     res.locals.errors = errors.array();
+    console.log(errors.array());
     res.status(400);
-    return next();
+    next();
 }
 
 module.exports = {
