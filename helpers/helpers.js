@@ -6,4 +6,23 @@ function getQueryUpdateItem(keysToUpdate) {
     return stringArr.join(", ");
 }
 
-module.exports = { helpersDB: { getQueryUpdateItem } };
+function renderWrongCategory(req, res, next) {
+    res.locals.errors = [
+        {
+            msg: "The category id was not found or it is not correct.",
+        },
+    ];
+    res.status(400);
+    return next();
+}
+
+function renderWrongInformationItem(req, res, next) {
+    res.locals.errors = errors.array();
+    res.status(400);
+    return next();
+}
+
+module.exports = {
+    helpersDB: { getQueryUpdateItem },
+    helpersRoutes: { renderWrongInformationItem, renderWrongCategory },
+};

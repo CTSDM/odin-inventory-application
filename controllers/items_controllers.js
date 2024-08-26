@@ -1,6 +1,7 @@
 const db = require("../db/queries.js");
 const validation = require("../middleware/validation.js");
 const { constraints } = require("../config/config.js");
+const { helpersRoutes } = require("../helpers/helpers.js");
 
 async function getAddNewItem(req, res) {
     const parentItems = await getAllParentItems();
@@ -29,9 +30,10 @@ const postAddNewItem = [
     validation.validateNewItem,
     async function (req, res, next) {
         if (!(await isParentItemCategoryIsValid(+req.body.categoryId)))
-            return renderWrongCategory(req, res, next);
+            return helpersRoutes.renderWrongCategory(req, res, next);
         const errors = validation.validationResult(req);
-        if (!errors.isEmpty()) renderWrongInformationItem(req, res, next);
+        if (!errors.isEmpty())
+            helpersRoutes.renderWrongInformationItem(req, res, next);
         db.postAddNewItem(
             req.body.name,
             req.body.description,
@@ -44,22 +46,6 @@ const postAddNewItem = [
     },
     getAddNewItem,
 ];
-
-function renderWrongCategory(req, res, next) {
-    res.locals.errors = [
-        {
-            msg: "The category id was not found or it is not correct.",
-        },
-    ];
-    res.status(400);
-    return next();
-}
-
-function renderWrongInformationItem(req, res, next) {
-    res.locals.errors = errors.array();
-    res.status(400);
-    return next();
-}
 
 async function getSelectedItem(req, res) {
     const item = await db.getItem(req.params.id);
@@ -82,9 +68,10 @@ const postUpdateItem = [
     async function (req, res, next) {
         const itemId = +req.params.id;
         if (!(await isParentItemCategoryIsValid(+req.body.categoryId)))
-            return renderWrongCategory(req, res, next);
+            return helpersRoutes.renderWrongCategory(req, res, next);
         const errors = validation.validationResult(req);
-        if (!errors.isEmpty()) renderWrongInformationItem(req, res, next);
+        if (!errors.isEmpty())
+            helpersRoutes.renderWrongInformationItem(req, res, next);
         // we need to check what fields from the item are actually being updated!
         // we will only perform this at the backend
         const updateInfo = await getUpdateInfo(
