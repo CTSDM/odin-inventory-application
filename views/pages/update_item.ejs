@@ -18,21 +18,23 @@
     </ul>
     <% } %> <% if (locals.requirements) { %>
     <form action="/items/<%= locals.item.id %>/update" method="post">
-        <label for="name">Name: </label>
+        <label for="item-name">Name: </label>
         <input
             type="text"
             name="name"
+            id="item-name"
             minlength="<%= locals.requirements.item.minLength %>"
             maxlength="<%= locals.requirements.item.maxLength %>"
             value="<%= locals.item.name %>"
             required
         />
 
-        <label for="description">Description: </label>
+        <label for="item-description">Description: </label>
         <textarea
             rows="2"
             cols="10"
             name="description"
+            id="item-description"
             minlength="<%= locals.requirements.description.minLength %>"
             maxlength="<%= locals.requirements.description.maxLength %>"
         >
@@ -42,10 +44,11 @@
       </textarea
         >
 
-        <label for="price">Price: </label>
+        <label for="item-price">Price: </label>
         <input
             type="number"
             name="price"
+            id="item-price"
             min="<%= locals.requirements.price.min %>"
             max="<%= locals.requirements.price.max %>"
             step="<%= locals.requirements.price.step %>"
@@ -53,19 +56,20 @@
             required
         />
 
-        <label for="quantity">Quantity: </label>
+        <label for="item-quantity">Quantity: </label>
         <input
             type="number"
             name="quantity"
+            id="item-quantity"
             min="<%= locals.requirements.quantity.min %>"
             max="<%= locals.requirements.quantity.max %>"
             value="<%= locals.item.quantity %>"
             required
         />
 
-        <label for="categoryId">Category</label>
+        <label for="item-categoryId">Category</label>
         <% if (locals.parentItems) { %>
-        <select name="categoryId" required>
+        <select name="categoryId" id="item-categoryId" required>
             <% locals.parentItems.forEach((category) => { %>
             <option value="<%= category.id %>">
                 <%= category.name %> <% if(locals.item.id === category.id) { %>
