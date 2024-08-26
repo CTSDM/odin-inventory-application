@@ -14,7 +14,7 @@ async function getUpdateItem(req, res) {
     const parentItems = await getAllParentItems();
     const item = await db.getItem(+req.params.id);
     res.render("../views/pages/update_item.ejs", {
-        item: item[0],
+        item: item,
         parentItems: parentItems,
         requirements: constraints.addNewItem,
     });
@@ -63,7 +63,7 @@ function renderWrongInformationItem(req, res, next) {
 
 async function getSelectedItem(req, res) {
     const item = await db.getItem(req.params.id);
-    res.render("../views/pages/show_single_item.ejs", { item: item[0] });
+    res.render("../views/pages/show_single_item.ejs", { item: item });
 }
 
 async function isParentItemCategoryIsValid(categoryId) {
@@ -132,9 +132,9 @@ async function getAllParentItems() {
 
 async function getUpdateInfo(itemId, changedInfoItem) {
     const item = await db.getItem(itemId);
-    item[0].price = +item[0].price;
+    item.price = +item.price;
     const differencesItem = {};
-    for (const [key, value] of Object.entries(item[0])) {
+    for (const [key, value] of Object.entries(item)) {
         if (value !== changedInfoItem[key]) {
             differencesItem[key] = changedInfoItem[key];
         }

@@ -63,7 +63,7 @@ async function postAddNewItem(
 
 async function updateItem(itemId, columns, values) {
     const queryUpdate = helpersDB.getQueryUpdateItem(columns);
-    return await pool.query(
+    await pool.query(
         `UPDATE ${env.database.productsTableName} 
         SET ${queryUpdate}
         WHERE id = ${itemId}`,
@@ -72,11 +72,12 @@ async function updateItem(itemId, columns, values) {
 }
 
 async function getItem(itemId) {
+    // Since a single item is being queried the item object is returned instead of an array
     const { rows } = await pool.query(
         `SELECT * FROM ${env.database.productsTableName} WHERE id = $1`,
         [itemId],
     );
-    return rows.length === 0 ? undefined : rows;
+    return rows.length === 0 ? undefined : rows[0];
 }
 
 module.exports = {
