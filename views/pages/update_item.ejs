@@ -1,0 +1,82 @@
+<%- include('../partials/_head.ejs') %> <%- include('../partials/header.ejs') %>
+
+<div class="add-item">
+    <% if (locals.successUpdateItem === true) { %>
+    <span>The item was successfully updated!</span>
+    <% } else if (locals.successUpdateItem === false) { %>
+    <span>You must change some parameter in order to update the item!</span>
+    <% } %>
+
+    <span>You can change the item details below:</span>
+
+    <% if (locals.errors) { %>
+    <p>Please, fix the following errors:</p>
+    <ul class="errors">
+        <% locals.errors.forEach((error)=> { %>
+        <li><%= error.msg %></li>
+        <% }) %>
+    </ul>
+    <% } %> <% if (locals.requirements) { %>
+    <form action="/items/<%= locals.item.id %>/update" method="post">
+        <label for="name">Name: </label>
+        <input
+            type="text"
+            name="name"
+            minlength="<%= locals.requirements.item.minLength %>"
+            maxlength="<%= locals.requirements.item.maxLength %>"
+            value="<%= locals.item.name %>"
+            required
+        />
+
+        <label for="description">Description: </label>
+        <textarea
+            rows="2"
+            cols="10"
+            name="description"
+            minlength="<%= locals.requirements.description.minLength %>"
+            maxlength="<%= locals.requirements.description.maxLength %>"
+        >
+<% if (locals.item.description) { %>
+<%= locals.item.description %>
+      <% } %>
+      </textarea
+        >
+
+        <label for="price">Price: </label>
+        <input
+            type="number"
+            name="price"
+            min="<%= locals.requirements.price.min %>"
+            max="<%= locals.requirements.price.max %>"
+            step="<%= locals.requirements.price.step %>"
+            value="<%= locals.item.price %>"
+            required
+        />
+
+        <label for="quantity">Quantity: </label>
+        <input
+            type="number"
+            name="quantity"
+            min="<%= locals.requirements.quantity.min %>"
+            max="<%= locals.requirements.quantity.max %>"
+            value="<%= locals.item.quantity %>"
+            required
+        />
+
+        <label for="categoryId">Category</label>
+        <% if (locals.parentItems) { %>
+        <select name="categoryId" required>
+            <% locals.parentItems.forEach((category) => { %>
+            <option value="<%= category.id %>">
+                <%= category.name %> <% if(locals.item.id === category.id) { %>
+                "selected" <% } %>
+            </option>
+            <% }) %>
+        </select>
+        <% } %>
+        <button type="submit">Update item</button>
+    </form>
+    <% } %>
+</div>
+
+<%- include('../partials/_footer.ejs') %>

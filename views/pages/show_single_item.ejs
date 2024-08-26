@@ -9,4 +9,7 @@ Showing the description of the selected item.
     <div class="category">Category: <%= locals.item.category_id %></div>
     <% } %>
 </div>
+<div class="update-item">
+    <a href="/items/<%= locals.item.id %>/update">Update item</a>
+</div>
 <%- include('../partials/_footer.ejs') %>

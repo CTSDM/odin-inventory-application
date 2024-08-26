@@ -1,4 +1,4 @@
-const { body, query, validationResult } = require("express-validator");
+const { body, query, param, validationResult } = require("express-validator");
 const { constraints } = require("../config/config");
 
 const errorMessages = {
@@ -63,8 +63,32 @@ const validateNewItem = [
             return true;
         })
         .withMessage(`Price ${errorMessages.quantity.limits}`),
+    body("description")
+        .trim()
+        .custom((value) => {
+            if (
+                value < constraints.addNewItem.price.min ||
+                value > constraints.addNewItem.price.max
+            )
+                return false;
+            return true;
+        })
+        .withMessage(`Price ${errorMessages.description.length}`),
 ];
 
-const validation = { validateNewItem, validationResult };
+const validateParamId = [
+    param("id")
+        .trim()
+        .isNumeric()
+        .withMessage("The id item was not a number.")
+        .custom((value) => {
+            if (isFinite(value)) {
+                return true;
+            } else return false;
+        })
+        .withMessage("The id must be a finite value."),
+];
+
+const validation = { validateNewItem, validationResult, validateParamId };
 
 module.exports = validation;
