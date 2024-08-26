@@ -41,8 +41,8 @@ async function getAllCategories() {
 
 async function getAllItems() {
     const { rows } = await pool.query(
-        `SELECT * FROM ${env.database.productsTableName};
-        ORDER BY id`,
+        `SELECT * FROM ${env.database.productsTableName}
+        ORDER BY id;`,
     );
     return rows.length === 0 ? undefined : rows;
 }
