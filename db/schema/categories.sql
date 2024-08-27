@@ -1,0 +1,6 @@
+CREATE TABLE IF NOT EXISTS categories (
+    id INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+    name TEXT NOT NULL,
+    parent_id INTEGER,
+    FOREIGN KEY (parent_id) REFERENCES categories(id)
+);
