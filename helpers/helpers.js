@@ -16,7 +16,7 @@ function renderWrongCategory(req, res, next) {
     return next();
 }
 
-function renderWrongInformationItem(req, res, next, errors) {
+function renderWrongInformation(req, res, next, errors) {
     res.locals.errors = errors.array();
     console.log(errors.array());
     res.status(400);
@@ -25,5 +25,5 @@ function renderWrongInformationItem(req, res, next, errors) {
 
 module.exports = {
     helpersDB: { getQueryUpdateItem },
-    helpersRoutes: { renderWrongInformationItem, renderWrongCategory },
+    helpersRoutes: { renderWrongInformation, renderWrongCategory },
 };

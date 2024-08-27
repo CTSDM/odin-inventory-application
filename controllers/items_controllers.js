@@ -33,12 +33,7 @@ const postAddNewItem = [
             return helpersRoutes.renderWrongCategory(req, res, next);
         const errors = validation.validationResult(req);
         if (!errors.isEmpty())
-            return helpersRoutes.renderWrongInformationItem(
-                req,
-                res,
-                next,
-                errors,
-            );
+            return helpersRoutes.renderWrongInformation(req, res, next, errors);
         db.postAddNewItem(
             req.body.name,
             req.body.description,
@@ -76,7 +71,7 @@ const postUpdateItem = [
             return helpersRoutes.renderWrongCategory(req, res, next);
         const errors = validation.validationResult(req);
         if (!errors.isEmpty())
-            helpersRoutes.renderWrongInformationItem(req, res, next);
+            return helpersRoutes.renderWrongInformation(req, res, next);
         // we need to check what fields from the item are actually being updated!
         // we will only perform this at the backend
         const updateInfo = await getUpdateInfo(
@@ -89,8 +84,7 @@ const postUpdateItem = [
             await db.updateItem(itemId, keys, values);
         } else {
             res.locals.successUpdateItem = false;
-            next();
-            return;
+            return next();
         }
         res.locals.successUpdateItem = true;
         next();
@@ -139,7 +133,7 @@ const getDeleteItem = [
     async function (req, res, next) {
         const errors = validation.validationResult(req);
         if (!errors.isEmpty()) {
-            helpersRoutes.renderWrongInformationItem(req, res, next, errors);
+            helpersRoutes.renderWrongInformation(req, res, next, errors);
         } else {
             const itemId = +req.params.id;
             let itemDeletedId = await db.deleteItem(itemId);
