@@ -142,14 +142,11 @@ const getDeleteItem = [
             helpersRoutes.renderWrongInformationItem(req, res, next, errors);
         } else {
             const itemId = +req.params.id;
-            let item = await db.getItem(itemId);
-            if (item) {
-                await db.deleteItem(itemId);
-                item = await db.getItem(itemId);
-                if (!item) return res.redirect("/items");
-                else res.locals.successItemDelete = false;
-            } else res.locals.itemNotFound = true;
-            res.render("../views/pages/show_single_item.ejs", { item: item });
+            let itemDeletedId = await db.deleteItem(itemId);
+            if (itemDeletedId) return res.redirect("/items");
+            res.locals.itemNotFound = true;
+            res.locals.item = undefined;
+            res.render("../views/pages/show_single_item.ejs");
         }
     },
 ];

@@ -81,10 +81,13 @@ async function getItem(itemId) {
 }
 
 async function deleteItem(id) {
-    await pool.query(
-        `DELETE FROM  ${env.database.productsTableName} WHERE id = $1`,
+    const { rows } = await pool.query(
+        `DELETE FROM  ${env.database.productsTableName}
+        WHERE id = $1
+        RETURNING id`,
         [id],
     );
+    return rows.length === 0 ? false : true;
 }
 
 module.exports = {
