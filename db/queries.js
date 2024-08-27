@@ -90,6 +90,15 @@ async function deleteItem(id) {
     return rows.length === 0 ? false : true;
 }
 
+async function addCategory(name, parentId) {
+    await pool.query(
+        `INSERT INTO ${env.database.categoriesTableName}
+        (name, parent_id)
+        VALUES($1, $2)`,
+        [name, parentId],
+    );
+}
+
 module.exports = {
     getMainCategories,
     getSubCategories,
@@ -100,4 +109,5 @@ module.exports = {
     getItem,
     updateItem,
     deleteItem,
+    addCategory,
 };

@@ -7,7 +7,7 @@ async function getAddNewItem(req, res) {
     const parentItems = await getAllParentItems();
     res.render("../views/pages/add_item.ejs", {
         parentItems: parentItems,
-        requirements: constraints.addNewItem,
+        requirements: constraints,
     });
 }
 
@@ -17,7 +17,7 @@ async function getUpdateItem(req, res) {
     res.render("../views/pages/update_item.ejs", {
         item: item,
         parentItems: parentItems,
-        requirements: constraints.addNewItem,
+        requirements: constraints,
     });
 }
 

@@ -4,21 +4,21 @@ const { constraints } = require("../config/config");
 const errorMessages = {
     alphaNumeric: "Category must be only composed of letters.",
     item: {
-        length: `must be between ${constraints.addNewItem.item.minLength} and ${constraints.addNewItem.item.maxLength}.`,
+        length: `must be between ${constraints.item.minLength} and ${constraints.item.maxLength}.`,
     },
     description: {
-        length: `must be between ${constraints.addNewItem.description.minLength} and ${constraints.addNewItem.description.maxLength}`,
+        length: `must be between ${constraints.description.minLength} and ${constraints.description.maxLength}`,
     },
     category: {
-        length: `must be between ${constraints.addNewItem.category.minLength} and ${constraints.addNewItem.category.maxLength}.`,
+        length: `must be between ${constraints.category.minLength} and ${constraints.category.maxLength}.`,
     },
     price: {
         number: "must be a number.",
-        limits: `must be between ${constraints.addNewItem.price.min} and ${constraints.addNewItem.price.max}.`,
+        limits: `must be between ${constraints.price.min} and ${constraints.price.max}.`,
     },
     quantity: {
         number: "must be a number.",
-        limits: `must be between ${constraints.addNewItem.quantity.min} and ${constraints.addNewItem.quantity.max}.`,
+        limits: `must be between ${constraints.quantity.min} and ${constraints.quantity.max}.`,
     },
     server: {
         generic: "Something went wrong on the server, please try again.",
@@ -29,8 +29,8 @@ const validateNewItem = [
     body("name")
         .trim()
         .isLength({
-            min: constraints.addNewItem.item.minLength,
-            max: constraints.addNewItem.item.maxLength,
+            min: constraints.item.minLength,
+            max: constraints.item.maxLength,
         })
         .withMessage(`Item name ${errorMessages.item.length}`),
     body("categoryId")
@@ -42,10 +42,7 @@ const validateNewItem = [
         .isNumeric()
         .withMessage(`Price ${errorMessages.price.number}`)
         .custom((value) => {
-            if (
-                value < constraints.addNewItem.price.min ||
-                value > constraints.addNewItem.price.max
-            )
+            if (value < constraints.price.min || value > constraints.price.max)
                 return false;
             return true;
         })
@@ -56,8 +53,8 @@ const validateNewItem = [
         .withMessage(`Quantity ${errorMessages.quantity.number}`)
         .custom((value) => {
             if (
-                value < constraints.addNewItem.quantity.min ||
-                value > constraints.addNewItem.quantity.max
+                value < constraints.quantity.min ||
+                value > constraints.quantity.max
             )
                 return false;
             return true;
@@ -66,14 +63,21 @@ const validateNewItem = [
     body("description")
         .trim()
         .custom((value) => {
-            if (
-                value < constraints.addNewItem.price.min ||
-                value > constraints.addNewItem.price.max
-            )
+            if (value < constraints.price.min || value > constraints.price.max)
                 return false;
             return true;
         })
         .withMessage(`Price ${errorMessages.description.length}`),
+];
+
+const validateNewCategory = [
+    body("name")
+        .trim()
+        .isLength({
+            min: constraints.category.minLength,
+            max: constraints.category.maxLength,
+        })
+        .withMessage(`Category name ${errorMessages.category.length}`),
 ];
 
 const validateParamId = [
@@ -93,6 +97,11 @@ const validateParamId = [
         }),
 ];
 
-const validation = { validateNewItem, validationResult, validateParamId };
+const validation = {
+    validateNewItem,
+    validationResult,
+    validateParamId,
+    validateNewCategory,
+};
 
 module.exports = validation;
