@@ -80,6 +80,13 @@ async function getItem(itemId) {
     return rows.length === 0 ? undefined : rows[0];
 }
 
+async function deleteItem(id) {
+    await pool.query(
+        `DELETE FROM  ${env.database.productsTableName} WHERE id = $1`,
+        [id],
+    );
+}
+
 module.exports = {
     getMainCategories,
     getSubCategories,
@@ -89,4 +96,5 @@ module.exports = {
     postAddNewItem,
     getItem,
     updateItem,
+    deleteItem,
 };

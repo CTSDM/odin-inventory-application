@@ -134,6 +134,26 @@ async function getUpdateInfo(itemId, changedInfoItem) {
     return differencesItem;
 }
 
+const getDeleteItem = [
+    validation.validateParamId,
+    async function (req, res, next) {
+        const errors = validation.validationResult(req);
+        if (!errors.isEmpty()) {
+            helpersRoutes.renderWrongInformationItem(req, res, next, errors);
+        } else {
+            const itemId = +req.params.id;
+            let item = await db.getItem(itemId);
+            if (item) {
+                await db.deleteItem(itemId);
+                item = await db.getItem(itemId);
+                if (!item) return res.redirect("/items");
+                else res.locals.successItemDelete = false;
+            } else res.locals.itemNotFound = true;
+            res.render("../views/pages/show_single_item.ejs", { item: item });
+        }
+    },
+];
+
 module.exports = {
     getAllItems,
     getAddNewItem,
@@ -141,4 +161,5 @@ module.exports = {
     getSelectedItem,
     getUpdateItem,
     postUpdateItem,
+    getDeleteItem,
 };

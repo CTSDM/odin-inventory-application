@@ -1,7 +1,9 @@
 <%- include('../partials/_head.ejs') %> <%- include('../partials/header.ejs') %>
 <div>
-    Pick an item. <% if (locals.items) { %> <% locals.items.forEach((item) => {
-    %>
+    <% if (locals.successItemDelete === true) { %>
+    <div class="item-status">The item was successfully deleted.</div>
+    <% } %> Pick an item. <% if (locals.items) { %> <%
+    locals.items.forEach((item) => { %>
     <div class="items">
         <a href="/items/<%= item.id %>"><%= item.name %></a>
     </div>
