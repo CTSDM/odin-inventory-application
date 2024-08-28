@@ -1,7 +1,7 @@
 <%- include('../partials/_head.ejs') %> <%- include('../partials/header.ejs') %>
 <div class="add-item">
     <% if (locals.successAddNewItem) { %>
-    <span>The new item was addedd successfully!</span>
+    <span>The new item was added successfully!</span>
     <% } %> <% if (locals.errors) { %> Please, fix the following errors:
     <ul class="errors">
         <% locals.errors.forEach((error) => { %>
@@ -48,13 +48,21 @@
             max="<%= locals.requirements.quantity.max %>"
             required
         />
-        <label for="item-categoryId">Category</label>
-        <% if (locals.parentItems) { %>
-        <select name="categoryId" id="item-categoryId" required>
-            <% locals.parentItems.forEach((category) => { %>
-            <option value="<%= category.id %>"><%= category.name %></option>
+        <% if (locals.parentItems) %>
+
+        <div>
+            <%{ locals.parentItems.forEach((category) => { %>
+            <input
+                type="checkbox"
+                name="categories[]"
+                value="<%= category.id %>"
+                id="item-category-<%= category.id %>"
+            />
+            <label for="item-category-<%= category.id %>"
+                ><%= category.name %></label
+            >
             <% }) %>
-        </select>
+        </div>
         <% } %>
         <button type="submit">Add new item</button>
     </form>

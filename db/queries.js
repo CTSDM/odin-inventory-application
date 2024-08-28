@@ -7,7 +7,17 @@ async function getMainCategories() {
     const { rows } = await pool.query(
         `SELECT * FROM ${env.database.categoriesTableName}
         WHERE parent_id IS NULL
-        ORDER BY id`,
+        ORDER BY id;`,
+    );
+    return rows;
+}
+
+async function getAllSubCategories() {
+    const { rows } = await pool.query(
+        `SELECT * FROM ${env.database.categoriesTableName}
+    WHERE parent_id IS NOT NULL
+    ORDER BY id;
+    `,
     );
     return rows;
 }
@@ -24,9 +34,11 @@ async function getSubCategories(idParentQuery) {
 
 async function getItemsFromCategory(idCategoryQuery) {
     const { rows } = await pool.query(
-        `SELECT * FROM ${env.database.productsTableName}
-    WHERE category_id = ${idCategoryQuery}
-    ORDER BY id`,
+        `SELECT items.* FROM ${env.database.itemsTableName} as items
+        JOIN ${env.database.itemsCategoriesTableName} as relationship ON relationship.item_id = items.id
+        WHERE relationship.category_id = $1
+        ORDER BY items.id;`,
+        [idCategoryQuery],
     );
     return rows.length === 0 ? undefined : rows;
 }
@@ -41,30 +53,26 @@ async function getAllCategories() {
 
 async function getAllItems() {
     const { rows } = await pool.query(
-        `SELECT * FROM ${env.database.productsTableName}
+        `SELECT * FROM ${env.database.itemsTableName}
         ORDER BY id;`,
     );
     return rows.length === 0 ? undefined : rows;
 }
 
-async function postAddNewItem(
-    name,
-    description,
-    price,
-    quantity,
-    parentCategory,
-) {
-    await pool.query(
-        `INSERT INTO ${env.database.productsTableName} (name, description, price, quantity, category_id)
-                        VALUES ($1,$2,$3,$4,$5)`,
-        [name, description, price, quantity, parentCategory],
+async function addNewItem(name, description, price, quantity) {
+    const { rows } = await pool.query(
+        `INSERT INTO ${env.database.itemsTableName} (name, description, price, quantity)
+        VALUES ($1,$2,$3,$4)
+        RETURNING id;`,
+        [name, description, price, quantity],
     );
+    return rows[0];
 }
 
 async function updateItem(itemId, columns, values) {
     const queryUpdate = helpersDB.getQueryUpdateItem(columns);
     await pool.query(
-        `UPDATE ${env.database.productsTableName} 
+        `UPDATE ${env.database.itemsTableName} 
         SET ${queryUpdate}
         WHERE id = ${itemId}`,
         values,
@@ -74,7 +82,7 @@ async function updateItem(itemId, columns, values) {
 async function getItem(itemId) {
     // Since a single item is being queried the item object is returned instead of an array
     const { rows } = await pool.query(
-        `SELECT * FROM ${env.database.productsTableName} WHERE id = $1`,
+        `SELECT * FROM ${env.database.itemsTableName} WHERE id = $1`,
         [itemId],
     );
     return rows.length === 0 ? undefined : rows[0];
@@ -82,7 +90,7 @@ async function getItem(itemId) {
 
 async function deleteItem(id) {
     const { rows } = await pool.query(
-        `DELETE FROM  ${env.database.productsTableName}
+        `DELETE FROM  ${env.database.itemsTableName}
         WHERE id = $1
         RETURNING id`,
         [id],
@@ -99,15 +107,26 @@ async function addCategory(name, parentId) {
     );
 }
 
+async function addRelationship(querySQL, valuesArr) {
+    return await pool.query(
+        `INSERT INTO ${env.database.itemsCategoriesTableName} (item_id, category_id)
+        VALUES ${querySQL}
+        RETURNING *`,
+        valuesArr,
+    );
+}
+
 module.exports = {
     getMainCategories,
     getSubCategories,
     getItemsFromCategory,
     getAllCategories,
     getAllItems,
-    postAddNewItem,
+    addNewItem,
     getItem,
     updateItem,
     deleteItem,
     addCategory,
+    getAllSubCategories,
+    addRelationship,
 };

@@ -1,7 +1,8 @@
 const env = {
     database: {
         categoriesTableName: process.env.TABLE_CATEGORY_NAME,
-        productsTableName: process.env.TABLE_PRODUCT_NAME,
+        itemsTableName: process.env.TABLE_ITEM_NAME,
+        itemsCategoriesTableName: process.env.TABLE_ITEM_CATEGORY_NAME,
         url: process.env.DATABASE_URL,
     },
 };

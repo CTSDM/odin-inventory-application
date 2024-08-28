@@ -33,9 +33,23 @@ const validateNewItem = [
             max: constraints.item.maxLength,
         })
         .withMessage(`Item name ${errorMessages.item.length}`),
-    body("categoryId")
-        .trim()
-        .isNumeric()
+    body("categories")
+        .custom((arrValues) => {
+            let pass = true;
+            if (arrValues.length > 0) {
+                arrValues.forEach((id) => {
+                    const idNum = +id;
+                    if (
+                        isFinite(idNum) === false ||
+                        typeof idNum !== "number"
+                    ) {
+                        pass = false;
+                        return;
+                    }
+                });
+            } else pass = false;
+            return pass;
+        })
         .withMessage(`${errorMessages.server.generic}`),
     body("price")
         .trim()

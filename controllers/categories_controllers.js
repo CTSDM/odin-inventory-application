@@ -36,7 +36,7 @@ const getSubCategories = [
 ];
 
 async function getAddCategory(req, res) {
-    const categories = await db.getAllCategories();
+    const categories = await db.getMainCategories();
     res.render("../views/pages/add_category.ejs", {
         categories: categories,
         requirements: constraints,

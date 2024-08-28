@@ -4,7 +4,7 @@ const { constraints } = require("../config/config.js");
 const { helpersRoutes } = require("../helpers/helpers.js");
 
 async function getAddNewItem(req, res) {
-    const parentItems = await getAllParentItems();
+    const parentItems = await db.getAllSubCategories();
     res.render("../views/pages/add_item.ejs", {
         parentItems: parentItems,
         requirements: constraints,
@@ -12,7 +12,7 @@ async function getAddNewItem(req, res) {
 }
 
 async function getUpdateItem(req, res) {
-    const parentItems = await getAllParentItems();
+    const parentItems = await db.getAllSubCategories();
     const item = await db.getItem(+req.params.id);
     res.render("../views/pages/update_item.ejs", {
         item: item,
@@ -29,18 +29,21 @@ async function getAllItems(req, res) {
 const postAddNewItem = [
     validation.validateNewItem,
     async function (req, res, next) {
-        if (!(await isParentItemCategoryIsValid(+req.body.categoryId)))
-            return helpersRoutes.renderWrongCategory(req, res, next);
         const errors = validation.validationResult(req);
         if (!errors.isEmpty())
             return helpersRoutes.renderWrongInformation(req, res, next, errors);
-        db.postAddNewItem(
+        // we first try to add the relationship item-category
+        // for now, we won't check the validity categories id
+        // we will assume that it wasn't messed up on the client side
+        const newItemObj = await db.addNewItem(
             req.body.name,
             req.body.description,
-            req.body.price,
-            req.body.quantity,
-            req.body.categoryId,
+            +req.body.price,
+            +req.body.quantity,
         );
+        const categories = req.body.categories.map((x) => +x);
+        const paramsSQL = getParamsSQLAddRelation(newItemObj.id, categories);
+        await db.addRelationship(paramsSQL[0], paramsSQL[1]);
         res.locals.successAddNewItem = true;
         next();
     },
@@ -54,7 +57,7 @@ async function getSelectedItem(req, res) {
 
 async function isParentItemCategoryIsValid(categoryId) {
     // Checking that the category id haven't been messed up on the client side
-    const parentItems = await getAllParentItems();
+    const parentItems = await db.getAllSubCategories();
     for (let i = 0; i < parentItems.length; ++i) {
         if (parentItems[i].id === categoryId) return true;
     }
@@ -99,21 +102,7 @@ function getItemInfoFromHTTPcontainer(id, container) {
         description: container.description,
         price: +container.price,
         quantity: +container.quantity,
-        category_id: +container.categoryId,
     };
-}
-
-async function getAllParentItems() {
-    // we return all the categories that have no categories underneath
-    // these categories only have items
-    const allCategories = await db.getAllCategories();
-    const parentItems = allCategories.filter((category) => {
-        for (let i = 0; i < allCategories.length; ++i) {
-            if (category.parent_id === allCategories[i].id) return true;
-        }
-        return false;
-    });
-    return parentItems;
 }
 
 async function getUpdateInfo(itemId, changedInfoItem) {
@@ -144,6 +133,17 @@ const getDeleteItem = [
         }
     },
 ];
+
+function getParamsSQLAddRelation(itemId, categoriesIdArr) {
+    const query = [];
+    const values = [];
+    const multiplier = 2;
+    categoriesIdArr.forEach((categoryId, index) => {
+        values.push(itemId, categoryId);
+        query.push(`($${index * multiplier + 1}, $${index * multiplier + 2})`);
+    });
+    return [query.join(", "), values];
+}
 
 module.exports = {
     getAllItems,
