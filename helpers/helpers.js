@@ -61,7 +61,7 @@ function getQueryAddRelation(arrItems, arrCategories) {
     return [finalQuery, queryValuesArr];
 }
 
-function getQueryDeleteRelation(arrItems, arrCategories) {
+function getQueryFromItemCategory(arrItems, arrCategories) {
     // only one of the arrays can have a length greater than 1
     // we return the part of a delete from query containing the *where* details
     let queryArr = [];
@@ -81,6 +81,16 @@ function getQueryDeleteRelation(arrItems, arrCategories) {
         `) AND ${arrOrder[1]} = ($${queryValuesArr.length + 1})`;
     queryValuesArr.push(singleEntry);
     return [finalQuery, queryValuesArr];
+}
+
+function getQueryFromItem(itemId) {
+    return ["item_id = $1", [itemId]];
+}
+
+function getQueryDeleteRelation(arrItems, arrCategories) {
+    if (arrItems && arrCategories)
+        return getQueryFromItemCategory(arrItems, arrCategories);
+    else if (arrCategories === undefined) return getQueryFromItem(arrItems[0]);
 }
 
 module.exports = {

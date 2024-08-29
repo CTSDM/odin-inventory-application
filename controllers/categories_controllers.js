@@ -4,7 +4,7 @@ const { constraints } = require("../config/config.js");
 const { helpersRoutes } = require("../helpers/helpers.js");
 const { getAddNewItem } = require("./items_controllers.js");
 
-async function getMainCategories(req, res) {
+async function getMainCategories(_, res) {
     const categories = await db.getMainCategories();
     res.render("../views/pages/categories.ejs", { categories: categories });
 }
@@ -30,12 +30,12 @@ const getSubCategories = [
             }
         }
     },
-    function (req, res) {
+    function (_, res) {
         res.render("../views/pages/categories.ejs");
     },
 ];
 
-async function getAddCategory(req, res) {
+async function getAddCategory(_, res) {
     const categories = await db.getMainCategories();
     res.render("../views/pages/add_category.ejs", {
         categories: categories,

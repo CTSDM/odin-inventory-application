@@ -3,7 +3,7 @@ const validation = require("../middleware/validation.js");
 const { constraints } = require("../config/config.js");
 const { helpersRoutes } = require("../helpers/helpers.js");
 
-async function getAddNewItem(req, res) {
+async function getAddNewItem(_, res) {
     const subCategories = await db.getAllSubCategories();
     res.render("../views/pages/add_item.ejs", {
         subCategories: subCategories,
@@ -24,7 +24,7 @@ async function getUpdateItem(req, res) {
     });
 }
 
-async function getAllItems(req, res) {
+async function getAllItems(_, res) {
     const allItems = await db.getAllItems();
     res.render("../views/pages/show_items.ejs", { items: allItems });
 }
@@ -155,8 +155,10 @@ const getDeleteItem = [
             helpersRoutes.renderWrongInformation(req, res, next, errors);
         } else {
             const itemId = +req.params.id;
-            let itemDeletedId = await db.deleteItem(itemId);
-            if (itemDeletedId) return res.redirect("/items");
+            const itemDeletedId = await db.deleteItem(itemId);
+            const relationsDeleted = await db.deleteRelation([itemId]);
+            if (itemDeletedId && relationsDeleted)
+                return res.redirect("/items");
             res.locals.itemNotFound = true;
             res.locals.item = undefined;
             res.render("../views/pages/show_single_item.ejs");
