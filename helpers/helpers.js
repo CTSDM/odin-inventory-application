@@ -16,14 +16,78 @@ function renderWrongCategory(req, res, next) {
     return next();
 }
 
-function renderWrongInformation(req, res, next, errors) {
+function renderWrongInformation(_, res, next, errors) {
     res.locals.errors = errors.array();
     console.log(errors.array());
     res.status(400);
     next();
 }
 
+function getOrderedItemCategoriesArr(arr1, arr2) {
+    let arrLarger;
+    let singleEntry;
+    const arrOrder = [];
+
+    if (arr1.length > arr2.length) {
+        arrLarger = arr1;
+        arrOrder.push("item_id", "category_id");
+        singleEntry = arr2[0];
+    } else {
+        arrLarger = arr2;
+        arrOrder.push("category_id", "item_id");
+        singleEntry = arr1[0];
+    }
+
+    return [arrLarger, singleEntry, arrOrder];
+}
+
+function getQueryAddRelation(arrItems, arrCategories) {
+    let queryArr = [];
+    const queryValuesArr = [];
+    const [arrLarger, singleEntry, arrOrder] = getOrderedItemCategoriesArr(
+        arrItems,
+        arrCategories,
+    );
+
+    const multiplier = 2; // How many columns are in the table
+    arrLarger.forEach((item, index) => {
+        queryArr.push(
+            `($${index * multiplier + 1}, $${index * multiplier + 2})`,
+        );
+        queryValuesArr.push(item, singleEntry);
+    });
+
+    const finalQuery = `(${arrOrder[0]}, ${arrOrder[1]}) VALUES ${queryArr.join(", ")}`;
+    return [finalQuery, queryValuesArr];
+}
+
+function getQueryDeleteRelation(arrItems, arrCategories) {
+    // only one of the arrays can have a length greater than 1
+    // we return the part of a delete from query containing the *where* details
+    let queryArr = [];
+    const queryValuesArr = [];
+    const [arrLarger, singleEntry, arrOrder] = getOrderedItemCategoriesArr(
+        arrItems,
+        arrCategories,
+    );
+
+    arrLarger.forEach((item, index) => {
+        queryArr.push(`$${index + 1}`);
+        queryValuesArr.push(item);
+    });
+    const finalQuery =
+        `${arrOrder[0]} IN (` +
+        queryArr.join(" ,") +
+        `) AND ${arrOrder[1]} = ($${queryValuesArr.length + 1})`;
+    queryValuesArr.push(singleEntry);
+    return [finalQuery, queryValuesArr];
+}
+
 module.exports = {
-    helpersDB: { getQueryUpdateItem },
+    helpersDB: {
+        getQueryUpdateItem,
+        getQueryDeleteRelation,
+        getQueryAddRelation,
+    },
     helpersRoutes: { renderWrongInformation, renderWrongCategory },
 };

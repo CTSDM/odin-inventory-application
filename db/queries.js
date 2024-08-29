@@ -1,6 +1,7 @@
 const pool = require("./pool.js");
 const { env } = require("../config/config.js");
 const { helpersDB } = require("../helpers/helpers.js");
+const helpers = require("../helpers/helpers.js");
 
 async function getMainCategories() {
     // the main categories have NULL parent_id
@@ -116,6 +117,48 @@ async function addRelationship(querySQL, valuesArr) {
     );
 }
 
+async function addRelation(items, categories) {
+    const queryDetails = helpers.helpersDB.getQueryAddRelation(
+        items,
+        categories,
+    );
+
+    const { rows } = await pool.query(
+        `INSERT INTO ${env.database.itemsCategoriesTableName}
+        ${queryDetails[0]}
+        RETURNING *`,
+        queryDetails[1],
+    );
+
+    return rows;
+}
+
+async function deleteRelation(items, categories) {
+    // both items are categories must be arrays
+    // only one will have a length larger than 1
+    // getQueryRemoveRelation(items, categories);
+    const queryDetails = helpers.helpersDB.getQueryDeleteRelation(
+        items,
+        categories,
+    );
+    const { rows } = await pool.query(
+        `DELETE FROM ${env.database.itemsCategoriesTableName}
+        WHERE ${queryDetails[0]}
+        RETURNING *;`,
+        queryDetails[1],
+    );
+    return rows;
+}
+
+async function getCategoriesFromItems(itemId) {
+    const { rows } = await pool.query(
+        `SELECT category_id FROM ${env.database.itemsCategoriesTableName}
+        WHERE item_id = $1;`,
+        [itemId],
+    );
+    return rows.length === 0 ? undefined : rows;
+}
+
 module.exports = {
     getMainCategories,
     getSubCategories,
@@ -129,4 +172,7 @@ module.exports = {
     addCategory,
     getAllSubCategories,
     addRelationship,
+    getCategoriesFromItems,
+    deleteRelation,
+    addRelation,
 };

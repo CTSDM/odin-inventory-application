@@ -48,10 +48,9 @@
             max="<%= locals.requirements.quantity.max %>"
             required
         />
-        <% if (locals.parentItems) %>
-
+        <% if (locals.subCategories) {%>
         <div>
-            <%{ locals.parentItems.forEach((category) => { %>
+            <% locals.subCategories.forEach((category) => { %>
             <input
                 type="checkbox"
                 name="categories[]"

@@ -66,17 +66,24 @@
             value="<%= locals.item.quantity %>"
             required
         />
-
-        <label for="item-categoryId">Category</label>
-        <% if (locals.parentItems) { %>
-        <select name="categoryId" id="item-categoryId" required>
-            <% locals.parentItems.forEach((category) => { %>
-            <option value="<%= category.id %>">
-                <%= category.name %> <% if(locals.item.id === category.id) { %>
-                "selected" <% } %>
-            </option>
+        <% if (locals.subCategories) {%>
+        <div>
+            <% locals.subCategories.forEach((category) => { %>
+            <input
+                type="checkbox"
+                name="categories[]"
+                value="<%= category.id %>"
+                id="item-category-<%= category.id %>"
+                <%locals.relatedCategories.forEach((relatedCategory) => {
+                if(relatedCategory.category_id === category.id) {%> checked <%
+                }}) %>
+            />
+            <label for="item-category-<%= category.id %>"
+                ><%= category.name %> 
+                </label
+            >
             <% }) %>
-        </select>
+        </div>
         <% } %>
         <button type="submit">Update item</button>
     </form>

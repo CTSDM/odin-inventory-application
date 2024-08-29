@@ -4,20 +4,23 @@ const { constraints } = require("../config/config.js");
 const { helpersRoutes } = require("../helpers/helpers.js");
 
 async function getAddNewItem(req, res) {
-    const parentItems = await db.getAllSubCategories();
+    const subCategories = await db.getAllSubCategories();
     res.render("../views/pages/add_item.ejs", {
-        parentItems: parentItems,
+        subCategories: subCategories,
         requirements: constraints,
     });
 }
 
 async function getUpdateItem(req, res) {
-    const parentItems = await db.getAllSubCategories();
-    const item = await db.getItem(+req.params.id);
+    const subCategories = await db.getAllSubCategories();
+    const itemId = +req.params.id;
+    const relationItemCategory = await db.getCategoriesFromItems(itemId);
+    const item = await db.getItem(itemId);
     res.render("../views/pages/update_item.ejs", {
         item: item,
-        parentItems: parentItems,
+        subCategories: subCategories,
         requirements: constraints,
+        relatedCategories: relationItemCategory,
     });
 }
 
@@ -27,7 +30,8 @@ async function getAllItems(req, res) {
 }
 
 const postAddNewItem = [
-    validation.validateNewItem,
+    validation.validateItemFields,
+    validation.validateItemCategories,
     async function (req, res, next) {
         const errors = validation.validationResult(req);
         if (!errors.isEmpty())
@@ -55,37 +59,40 @@ async function getSelectedItem(req, res) {
     res.render("../views/pages/show_single_item.ejs", { item: item });
 }
 
-async function isParentItemCategoryIsValid(categoryId) {
-    // Checking that the category id haven't been messed up on the client side
-    const parentItems = await db.getAllSubCategories();
-    for (let i = 0; i < parentItems.length; ++i) {
-        if (parentItems[i].id === categoryId) return true;
-    }
-    return false;
-}
-
 const postUpdateItem = [
-    validation.validateNewItem,
+    validation.validateItemFields,
+    validation.validateItemCategories,
     validation.validateParamId,
     // we should do handle the errors that might get produced in the above code
     async function (req, res, next) {
         const itemId = +req.params.id;
-        if (!(await isParentItemCategoryIsValid(+req.body.categoryId)))
-            return helpersRoutes.renderWrongCategory(req, res, next);
         const errors = validation.validationResult(req);
         if (!errors.isEmpty())
-            return helpersRoutes.renderWrongInformation(req, res, next);
+            return helpersRoutes.renderWrongInformation(req, res, next, errors);
         // we need to check what fields from the item are actually being updated!
         // we will only perform this at the backend
+        const categories = req.body.categories;
         const updateInfo = await getUpdateInfo(
             itemId,
             getItemInfoFromHTTPcontainer(itemId, req.body),
+            categories,
         );
-        if (Object.keys(updateInfo).length) {
-            const keys = Object.keys(updateInfo);
-            const values = Object.values(updateInfo);
+        let changes = false;
+        if (Object.keys(updateInfo.item).length > 0) {
+            const keys = Object.keys(updateInfo.item);
+            const values = Object.values(updateInfo.item);
             await db.updateItem(itemId, keys, values);
-        } else {
+            changes = true;
+        }
+        if (updateInfo.categoriesDel.length > 0) {
+            changes = true;
+            await db.deleteRelation([itemId], updateInfo.categoriesDel);
+        }
+        if (updateInfo.categories.length > 0) {
+            changes = true;
+            await db.addRelation([itemId], updateInfo.categories);
+        }
+        if (changes === false) {
             res.locals.successUpdateItem = false;
             return next();
         }
@@ -105,16 +112,39 @@ function getItemInfoFromHTTPcontainer(id, container) {
     };
 }
 
-async function getUpdateInfo(itemId, changedInfoItem) {
+async function getUpdateInfo(itemId, changedInfoItem, changedCategories) {
     const item = await db.getItem(itemId);
     item.price = +item.price;
-    const differencesItem = {};
+    const differencesItem = { item: {}, categories: [], categoriesDel: [] };
+    // checking item fields differences
     for (const [key, value] of Object.entries(item)) {
         if (value !== changedInfoItem[key]) {
-            differencesItem[key] = changedInfoItem[key];
+            differencesItem.item[key] = changedInfoItem[key];
         }
     }
+    // checking changes on the categories
+    const categoriesRelation = await db.getCategoriesFromItems(itemId);
+    const objectCategoriesRelation = getObjectFromArrayIndexes(
+        categoriesRelation.map((obj) => obj["category_id"]),
+    );
+    const objectCategoriesChanged =
+        getObjectFromArrayIndexes(changedCategories);
+    for (const [key, value] of Object.entries(objectCategoriesChanged)) {
+        if (value !== objectCategoriesRelation[key]) {
+            differencesItem.categories.push(+key);
+        }
+        delete objectCategoriesRelation[key];
+    }
+    for (const [key, _] of Object.entries(objectCategoriesRelation)) {
+        differencesItem.categoriesDel.push(+key);
+    }
     return differencesItem;
+}
+
+function getObjectFromArrayIndexes(arrIndexes) {
+    const objectIndexes = {};
+    arrIndexes.forEach((index) => (objectIndexes[index] = true));
+    return objectIndexes;
 }
 
 const getDeleteItem = [

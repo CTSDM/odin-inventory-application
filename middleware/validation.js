@@ -25,7 +25,7 @@ const errorMessages = {
     },
 };
 
-const validateNewItem = [
+const validateItemFields = [
     body("name")
         .trim()
         .isLength({
@@ -33,24 +33,6 @@ const validateNewItem = [
             max: constraints.item.maxLength,
         })
         .withMessage(`Item name ${errorMessages.item.length}`),
-    body("categories")
-        .custom((arrValues) => {
-            let pass = true;
-            if (arrValues.length > 0) {
-                arrValues.forEach((id) => {
-                    const idNum = +id;
-                    if (
-                        isFinite(idNum) === false ||
-                        typeof idNum !== "number"
-                    ) {
-                        pass = false;
-                        return;
-                    }
-                });
-            } else pass = false;
-            return pass;
-        })
-        .withMessage(`${errorMessages.server.generic}`),
     body("price")
         .trim()
         .isNumeric()
@@ -84,6 +66,35 @@ const validateNewItem = [
         .withMessage(`Price ${errorMessages.description.length}`),
 ];
 
+const validateItemCategories = [
+    // A category need always at least one element
+    body("categories")
+        .custom((arrValues) => {
+            if (arrValues.length === 0) return false;
+            return true;
+        })
+        .withMessage("At least 1 category must be selected.")
+        .custom((arrValues) => {
+            let pass = true;
+            if (arrValues) {
+                if (arrValues.length > 0) {
+                    arrValues.forEach((id) => {
+                        const idNum = +id;
+                        if (
+                            isFinite(idNum) === false ||
+                            typeof idNum !== "number"
+                        ) {
+                            pass = false;
+                            return;
+                        }
+                    });
+                }
+            }
+            return pass;
+        })
+        .withMessage(`${errorMessages.server.generic}`),
+];
+
 const validateNewCategory = [
     body("name")
         .trim()
@@ -112,10 +123,11 @@ const validateParamId = [
 ];
 
 const validation = {
-    validateNewItem,
+    validateItemFields,
     validationResult,
     validateParamId,
     validateNewCategory,
+    validateItemCategories,
 };
 
 module.exports = validation;
