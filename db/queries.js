@@ -159,6 +159,25 @@ async function getCategoriesFromItems(itemId) {
     return rows.length === 0 ? undefined : rows;
 }
 
+async function deleteCategory(categoryId) {
+    const { rows } = await pool.query(
+        `DELETE FROM ${env.database.categoriesTableName}
+        WHERE id = $1
+        RETURNING *;`,
+        [categoryId],
+    );
+    return rows[0];
+}
+
+async function deleteItemLeftover() {
+    await pool.query(
+        `
+        DELETE FROM ${env.database.itemsTableName}
+        WHERE id NOT IN (SELECT DISTINCT item_id FROM  ${env.database.itemsCategoriesTableName});
+    `,
+    );
+}
+
 module.exports = {
     getMainCategories,
     getSubCategories,
@@ -175,4 +194,6 @@ module.exports = {
     getCategoriesFromItems,
     deleteRelation,
     addRelation,
+    deleteCategory,
+    deleteItemLeftover,
 };

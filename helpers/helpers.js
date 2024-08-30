@@ -83,14 +83,12 @@ function getQueryFromItemCategory(arrItems, arrCategories) {
     return [finalQuery, queryValuesArr];
 }
 
-function getQueryFromItem(itemId) {
-    return ["item_id = $1", [itemId]];
-}
-
 function getQueryDeleteRelation(arrItems, arrCategories) {
     if (arrItems && arrCategories)
         return getQueryFromItemCategory(arrItems, arrCategories);
-    else if (arrCategories === undefined) return getQueryFromItem(arrItems[0]);
+    else if (arrCategories === undefined) return ["item_id = $1", arrItems];
+    else if (arrItems === undefined) return ["category_id = $1", arrCategories];
+    else throw new Error("item and categories both are undefined");
 }
 
 module.exports = {

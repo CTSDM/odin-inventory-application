@@ -60,6 +60,18 @@ const postAddCategory = [
     getAddCategory,
 ];
 
+const getDeleteCategory = [
+    validation.validateNewCategory,
+    async function (req, res, _) {
+        const categoryId = +req.params.id;
+        await db.deleteRelation(undefined, [categoryId]);
+        const deletedCategory = await db.deleteCategory(categoryId);
+        await db.deleteItemLeftover();
+        if (deletedCategory) res.redirect("/");
+        else throw new Error("error when deleting category");
+    },
+];
+
 async function isCategoryValid(categoryId) {
     // Checking that the category id haven't been messed up on the client side
     const categories = await db.getAllCategories();
@@ -73,4 +85,5 @@ module.exports = {
     getSubCategories,
     getAddCategory,
     postAddCategory,
+    getDeleteCategory,
 };

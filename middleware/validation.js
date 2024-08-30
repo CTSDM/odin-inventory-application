@@ -109,7 +109,7 @@ const validateParamId = [
     param("id")
         .trim()
         .isNumeric()
-        .withMessage("The id item was not a number.")
+        .withMessage("The item id was not a number.")
         .custom((value) => {
             if (isFinite(value)) {
                 return true;
@@ -122,12 +122,20 @@ const validateParamId = [
         }),
 ];
 
+const validateCategoryId = [
+    param("id")
+        .trim()
+        .isNumeric()
+        .withMessage("The category id was not a number."),
+];
+
 const validation = {
     validateItemFields,
     validationResult,
     validateParamId,
     validateNewCategory,
     validateItemCategories,
+    validateCategoryId,
 };
 
 module.exports = validation;
