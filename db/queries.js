@@ -3,6 +3,24 @@ const { env } = require("../config/config.js");
 const { helpersDB } = require("../helpers/helpers.js");
 const helpers = require("../helpers/helpers.js");
 
+async function addCategory(name, parentId) {
+    await pool.query(
+        `INSERT INTO ${env.database.categoriesTableName}
+        (name, parent_id)
+        VALUES($1, $2)`,
+        [name, parentId],
+    );
+}
+
+async function getCategory(id) {
+    const { rows } = await pool.query(
+        `SELECT * FROM ${env.database.categoriesTableName}
+        WHERE id = $1`,
+        [id],
+    );
+    return rows[0];
+}
+
 async function getMainCategories() {
     // the main categories have NULL parent_id
     const { rows } = await pool.query(
@@ -71,6 +89,7 @@ async function addNewItem(name, description, price, quantity) {
 }
 
 async function updateItem(itemId, columns, values) {
+    console.log(columns);
     const queryUpdate = helpersDB.getQueryUpdateItem(columns);
     await pool.query(
         `UPDATE ${env.database.itemsTableName} 
@@ -78,6 +97,18 @@ async function updateItem(itemId, columns, values) {
         WHERE id = ${itemId}`,
         values,
     );
+}
+
+async function updateCategory(categoryId, columns, values) {
+    const queryUpdate = helpersDB.getQueryUpdateItem(columns);
+    const { rows } = await pool.query(
+        `UPDATE ${env.database.categoriesTableName}
+        SET ${queryUpdate}
+        WHERE id = ${categoryId}
+        RETURNING id`,
+        values,
+    );
+    return rows.length === 0 ? false : true;
 }
 
 async function getItem(itemId) {
@@ -97,15 +128,6 @@ async function deleteItem(id) {
         [id],
     );
     return rows.length === 0 ? false : true;
-}
-
-async function addCategory(name, parentId) {
-    await pool.query(
-        `INSERT INTO ${env.database.categoriesTableName}
-        (name, parent_id)
-        VALUES($1, $2)`,
-        [name, parentId],
-    );
 }
 
 async function addRelationship(querySQL, valuesArr) {
@@ -196,4 +218,6 @@ module.exports = {
     addRelation,
     deleteCategory,
     deleteItemLeftover,
+    getCategory,
+    updateCategory,
 };

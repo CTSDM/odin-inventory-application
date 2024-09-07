@@ -1,7 +1,7 @@
 <%- include('../partials/_head.ejs') %> <%- include('../partials/header.ejs') %>
 <div class="add-category">
     <% if (locals.successAddNewCategory) { %>
-    <span>The new category was addedd successfully!</span>
+    <span>The new category was successfully added!</span>
     <% } %> <% if (locals.errors) { %> Please, fix the following errors:
     <ul class="errors">
         <% locals.errors.forEach((error) => { %>

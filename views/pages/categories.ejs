@@ -1,16 +1,17 @@
 <%- include('../partials/_head.ejs') %> <%- include('../partials/header.ejs') %>
-        <div class="classification">
-            <% if (locals.categories) { %>Pick a category. <% locals.categories.forEach((category)=> { %>
-                    <div class="category">
-                        <a href="/categories/<%=category.id %>">
-                            <%= category.name %>
-                        </a>
-                    </div>
-                    <a href="/categories/<%=category.id %>/delete">Delete this category</a>
-                    <% }) } else { %>
-                        <div class="category-not-found">The category was not found!</div>
-                        <% } if (locals.successDelete) { %>
-                            <div class="category-deleted">The category was deleted successfully.</div>
-                            <% } %>
-        </div>
-        <%- include('../partials/_footer.ejs') %>
+<div class="classification">
+    <% if (locals.categories) { %>Pick a category. <%
+    locals.categories.forEach((category)=> { %>
+    <div class="category">
+        <a href="/categories/<%=category.id %>"> <%= category.name %> </a>
+        <br />
+        <a href="/categories/<%=category.id %>/update">Update this category</a>
+        <a href="/categories/<%=category.id %>/delete">Delete this category</a>
+    </div>
+    <% }) } else { %>
+    <div class="category-not-found">The category was not found!</div>
+    <% } if (locals.successDelete) { %>
+    <div class="category-deleted">The category was deleted successfully.</div>
+    <% } %>
+</div>
+<%- include('../partials/_footer.ejs') %>

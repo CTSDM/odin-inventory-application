@@ -1,70 +1,50 @@
 <%- include('../partials/_head.ejs') %> <%- include('../partials/header.ejs') %>
-<div class="add-item">
-    <% if (locals.successAddNewItem) { %>
-    <span>The new item was added successfully!</span>
-    <% } %> <% if (locals.errors) { %> Please, fix the following errors:
-    <ul class="errors">
-        <% locals.errors.forEach((error) => { %>
-        <li><%= error.msg %></li>
-        <% }) %>
-    </ul>
-    <span></span>
-    <% } %> <% if(locals.requirements) { %>
-    <form action="/items/new" method="post">
-        <label for="item-name">Name: </label>
-        <input
-            type="text"
-            name="name"
-            id="item-name"
-            minlength="<%= locals.requirements.item.minLength %>"
-            maxlength="<%= locals.requirements.item.maxLength %>"
-            required
-        />
-        <label for="item-description">Description: </label>
-        <textarea
-            rows="2"
-            cols="10"
-            name="description"
-            id="item-description"
-            minlength="<%= locals.requirements.description.minLength %>"
-            maxlength="<%= locals.requirements.description.maxLength %>"
-        ></textarea>
-        <label for="item-price">Price: </label>
-        <input
-            type="number"
-            name="price"
-            id="item-price"
-            min="<%= locals.requirements.price.min %>"
-            max="<%= locals.requirements.price.max %>"
-            step="<%= locals.requirements.price.step %>"
-            required
-        />
-        <label for="item-quantity">Quantity: </label>
-        <input
-            type="number"
-            name="quantity"
-            id="item-quantity"
-            min="<%= locals.requirements.quantity.min %>"
-            max="<%= locals.requirements.quantity.max %>"
-            required
-        />
-        <% if (locals.subCategories) {%>
-        <div>
-            <% locals.subCategories.forEach((category) => { %>
-            <input
-                type="checkbox"
-                name="categories[]"
-                value="<%= category.id %>"
-                id="item-category-<%= category.id %>"
-            />
-            <label for="item-category-<%= category.id %>"
-                ><%= category.name %></label
-            >
-            <% }) %>
+        <div class="add-item">
+            <% if (locals.successAddNewItem) { %>
+                <span>The new item was added successfully!</span>
+                <% } %>
+                    <% if (locals.errors) { %> Please, fix the following errors:
+                        <ul class="errors">
+                            <% locals.errors.forEach((error)=> { %>
+                                <li>
+                                    <%= error.msg %>
+                                </li>
+                                <% }) %>
+                        </ul>
+                        <span></span>
+                        <% } %>
+                            <% if(locals.requirements) { %>
+                                <form action="/items/new" method="post">
+                                    <label for="item-name">Name: </label>
+                                    <input type="text" name="name" id="item-name"
+                                        minlength="<%= locals.requirements.item.minLength %>"
+                                        maxlength="<%= locals.requirements.item.maxLength %>" required />
+                                    <label for="item-description">Description: </label>
+                                    <textarea rows="2" cols="10" name="description" id="item-description"
+                                        minlength="<%= locals.requirements.description.minLength %>"
+                                        maxlength="<%= locals.requirements.description.maxLength %>"></textarea>
+                                    <label for="item-price">Price: </label>
+                                    <input type="number" name="price" id="item-price"
+                                        min="<%= locals.requirements.price.min %>"
+                                        max="<%= locals.requirements.price.max %>"
+                                        step="<%= locals.requirements.price.step %>" required />
+                                    <label for="item-quantity">Quantity: </label>
+                                    <input type="number" name="quantity" id="item-quantity"
+                                        min="<%= locals.requirements.quantity.min %>"
+                                        max="<%= locals.requirements.quantity.max %>" required />
+                                    <% if (locals.subCategories) {%>
+                                        <div>
+                                            <% locals.subCategories.forEach((category)=> { %>
+                                                <input type="checkbox" name="categories[]" value="<%= category.id %>"
+                                                    id="item-category-<%= category.id %>" />
+                                                <label for="item-category-<%= category.id %>">
+                                                    <%= category.name %>
+                                                </label>
+                                                <% }) %>
+                                        </div>
+                                        <% } %>
+                                            <button type="submit">Add new item</button>
+                                </form>
+                                <% } %>
         </div>
-        <% } %>
-        <button type="submit">Add new item</button>
-    </form>
-    <% } %>
-</div>
-<%- include('../partials/_footer.ejs') %>
+        <%- include('../partials/_footer.ejs') %>

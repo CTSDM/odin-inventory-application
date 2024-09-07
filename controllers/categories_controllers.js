@@ -2,7 +2,6 @@ const db = require("../db/queries");
 const validation = require("../middleware/validation");
 const { constraints } = require("../config/config.js");
 const { helpersRoutes } = require("../helpers/helpers.js");
-const { getAddNewItem } = require("./items_controllers.js");
 
 async function getMainCategories(_, res) {
     const categories = await db.getMainCategories();
@@ -80,10 +79,42 @@ async function isCategoryValid(categoryId) {
     return false;
 }
 
+const getUpdateCategory = [
+    validation.validateParamId,
+    async function (req, res) {
+        const categoryId = +req.params.id;
+        const category = await db.getCategory(categoryId);
+        const categoriesMain = await db.getMainCategories();
+        res.locals.category = category;
+        res.locals.categories = categoriesMain;
+        res.locals.requirements = constraints;
+        res.render("../views/pages/update_category.ejs");
+    },
+];
+
+const postUpdateCategory = [
+    validation.validateCategoryId,
+    async function (req, res) {
+        const categoryId = +req.params.id;
+        res.locals.categories = await db.getMainCategories();
+        res.locals.requirements = constraints;
+        // for now we don't do a thorough check on the front end
+        res.locals.updateSuccess = await db.updateCategory(
+            categoryId,
+            Object.keys(req.body),
+            Object.values(req.body),
+        );
+        res.locals.category = await db.getCategory(categoryId);
+        res.render("../views/pages/update_category.ejs");
+    },
+];
+
 module.exports = {
     getMainCategories,
     getSubCategories,
     getAddCategory,
     postAddCategory,
     getDeleteCategory,
+    getUpdateCategory,
+    postUpdateCategory,
 };
