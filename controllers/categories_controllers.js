@@ -18,6 +18,7 @@ const getSubCategories = [
         const categories = await db.getSubCategories(id);
         if (categories) {
             res.locals.categories = categories;
+            res.locals.subCategories = true;
             next();
         } else {
             // if there are no more subcategories we print the items so we render another page

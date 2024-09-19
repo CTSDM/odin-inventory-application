@@ -4,9 +4,11 @@
     locals.categories.forEach((category)=> { %>
     <div class="category">
         <a href="/categories/<%=category.id %>"> <%= category.name %> </a>
+        <% if (locals.subCategories) {%>
         <br />
         <a href="/categories/<%=category.id %>/update">Update this category</a>
         <a href="/categories/<%=category.id %>/delete">Delete this category</a>
+        <% }%>
     </div>
     <% }) } else { %>
     <div class="category-not-found">The category was not found!</div>
