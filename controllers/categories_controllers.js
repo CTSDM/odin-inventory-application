@@ -26,6 +26,7 @@ const getSubCategories = [
             if (items) {
                 res.render("../views/pages/show_items.ejs", { items: items });
             } else {
+                res.locals.emptyCategory = true;
                 next();
             }
         }

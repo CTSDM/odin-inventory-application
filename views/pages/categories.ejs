@@ -10,10 +10,15 @@
         <a href="/categories/<%=category.id %>/delete">Delete this category</a>
         <% }%>
     </div>
-    <% }) } else { %>
-    <div class="category-not-found">The category was not found!</div>
-    <% } if (locals.successDelete) { %>
+    <% }) } if (locals.successDelete) { %>
     <div class="category-deleted">The category was deleted successfully.</div>
+    <% } if (locals.emptyCategory) { %>
+    <div class="empty-category">
+        The category is empty and doesn't hold any subcategories or items inside
+        it.
+    </div>
+    <% } else {%>
+    <div class="category-not-found">The category was not found!</div>
     <% } %>
 </div>
 <%- include('../partials/_footer.ejs') %>
