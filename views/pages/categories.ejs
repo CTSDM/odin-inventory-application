@@ -17,8 +17,8 @@
         The category is empty and doesn't hold any subcategories or items inside
         it.
     </div>
-    <% } else {%>
+    <% } else { if (!locals.categories) {%>
     <div class="category-not-found">The category was not found!</div>
-    <% } %>
+    <% }} %>
 </div>
 <%- include('../partials/_footer.ejs') %>

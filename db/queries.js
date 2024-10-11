@@ -200,24 +200,29 @@ async function deleteItemLeftover() {
     );
 }
 
+async function getAllRelationships() {
+    await pool.query(`SELECT * FROM ${env.database.itemsCategoriesTableName}`);
+}
+
 module.exports = {
-    getMainCategories,
-    getSubCategories,
-    getItemsFromCategory,
-    getAllCategories,
-    getAllItems,
-    addNewItem,
-    getItem,
-    updateItem,
-    deleteItem,
     addCategory,
-    getAllSubCategories,
+    addNewItem,
     addRelationship,
-    getCategoriesFromItems,
-    deleteRelation,
     addRelation,
     deleteCategory,
+    deleteItem,
     deleteItemLeftover,
+    deleteRelation,
+    getAllCategories,
+    getAllItems,
+    getAllRelationships,
+    getAllSubCategories,
     getCategory,
+    getCategoriesFromItems,
+    getItem,
+    getItemsFromCategory,
+    getMainCategories,
+    getSubCategories,
     updateCategory,
+    updateItem,
 };
