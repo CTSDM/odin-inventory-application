@@ -1,6 +1,6 @@
 <%- include('../partials/_head.ejs') %> <%- include('../partials/header.ejs') %>
         <div class="add-category">
-            <% if (locals.successAddNewCategory) { %>
+            <% if (locals.updateSuccess) { %>
                 <span>The new category was successfully updated!</span>
                 <% } %>
                     <% if (locals.errors) { %> Please, fix the following errors:

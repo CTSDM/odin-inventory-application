@@ -100,7 +100,7 @@ const postUpdateCategory = [
         const categoryId = +req.params.id;
         res.locals.categories = await db.getMainCategories();
         res.locals.requirements = constraints;
-        // for now we don't do a thorough check on the front end
+        // for now we don't do a thorough check on the front end nor on the backend really
         res.locals.updateSuccess = await db.updateCategory(
             categoryId,
             Object.keys(req.body),
